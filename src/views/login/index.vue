@@ -3,7 +3,7 @@
   <div class='container'>
     <!-- 卡片容器  el-card是一个element组件，根元素上默认添加一个类和组件的名称一致 -->
     <el-card>
-      <img src="../../assets/logo_index.png" alt="">
+      <img class="myimg" src="../../assets/logo_index.png" alt="">
 
       <!-- 表单 -->
       <el-form ref="loginForm" :model="LoginForm" status-icon :rules="LoginRules">
@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import local from '@/utils/local'
 export default {
   data () {
     const checkMobile = (rule, value, callback) => {
@@ -40,8 +41,8 @@ export default {
     }
     return {
       LoginForm: {
-        mobile: '',
-        code: ''
+        mobile: '17699999999',
+        code: '246810'
       },
       LoginRules: {
         mobile: [
@@ -59,18 +60,16 @@ export default {
   methods: {
     login () {
       // 对整个表单进行校验
-      this.$refs['loginForm'].validate((valid) => {
+      this.$refs['loginForm'].validate(async valid => {
         if (valid) {
-          // 校验成功  进行登录（发请求）
-          // post(url,参数对象)
-          // get(url,{params:参数对象})
-          this.$http.post('authorizations', this.LoginForm).then(res => {
-            // 成功
+          // 以下代码可能出现异常（报错）  使用try{ 可能报错代码 }catch(e){ 处理错误 }
+          try {
+            const { data: { data } } = await this.$http.post('authorizations', this.LoginForm)
+            local.setUser(data)
             this.$router.push('/')
-          }).catch(() => {
-            // 失败 提示
+          } catch (e) {
             this.$message.error('手机号或验证码错误')
-          })
+          }
         }
       })
     }
@@ -94,8 +93,8 @@ export default {
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-    img{
-        width:200px;
+    .myimg{
+        // width:200px;
         display:block;
         margin:0 auto 30px;
     }
